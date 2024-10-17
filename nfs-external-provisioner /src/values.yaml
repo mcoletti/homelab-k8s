@@ -10,7 +10,7 @@ nfs-subdir-external-provisioner:
 
   nfs:
     server: 192.168.0.98
-    path: /exported/path
+    path: /volume1/k8s-share
     mountOptions:
     volumeName: nfs-subdir-external-provisioner-root
     # Reclaim policy for the main nfs volume
