@@ -3,6 +3,48 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: home-assistant
+
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  annotations:
+    replicator.v1.mittwald.de/replicate-from: default/wildcard-colettifam-com-tls
+  name: wildcard-colettifam-com-tls
+  namespace: home-assistant
+data:
+  tls.crt: ""
+  tls.key: ""
+type: kubernetes.io/tls
+
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+  name: home-assistant
+  namespace: home-assistant
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - home.colettifam.com
+      secretName: wildcard-colettifam-com-tls
+  rules:
+    - host: home.colettifam.com
+      http:
+        paths:
+          - backend:
+              service:
+                name: home-assistant
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+
 ---
 apiVersion: v1
 kind: Service
@@ -18,6 +60,27 @@ spec:
       protocol: TCP
       port: 80
       targetPort: 8123
+
+
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: home-assistant-pvc
+  labels:
+    app: home-assistant
+  annotations:
+    volume.beta.kubernetes.io/storage-class: "nfs-client"
+  namespace: home-assistant
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -55,18 +118,10 @@ spec:
             - mountPath: /config/automations.yaml
               subPath: automations.yaml
               name:  home-assistant-configmap
-          # - mountPath: /dev/ttyUSB1
-          #   name: zigbee
+
           securityContext:
             privileged: true
-            # capabilities:
-            #   add:
-            #     - NET_ADMIN
-            #     - NET_RAW
-            #     - SYS_ADMIN
       hostNetwork: true
-      # nodeSelector:
-      #   workload: india
       volumes:
         - name: config
           persistentVolumeClaim:
@@ -74,9 +129,6 @@ spec:
         - name:  home-assistant-configmap
           configMap:
             name: home-assistant-configmap
-      # - name: zigbee
-      #   hostPath:
-      #     path: /dev/ttyACM0
 ---
 apiVersion: v1
 kind: Service
@@ -96,47 +148,8 @@ spec:
       protocol: TCP
       port: 3000
       targetPort: 3000
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  namespace: home-assistant
-  name: zwavejs2mqtt-india
-  labels:
-    app: zwavejs2mqtt
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: zwavejs2mqtt
-  template:
-    metadata:
-      labels:
-        app: zwavejs2mqtt
-    spec:
-      # restartPolicy: OnFailure
-      containers:
-        - name: zwavejs2mqtt
-          image: zwavejs/zwavejs2mqtt:9.23.0
-          ports:
-            - containerPort: 8091
-            - containerPort: 3000
-          volumeMounts:
-            - mountPath: /usr/src/app/store
-              name: configuration
-          # - mountPath: /dev/ttyACM0
-          #   name: zwave
-          securityContext:
-            privileged: true
-      volumes:
-        - name: configuration
-          persistentVolumeClaim:
-            claimName: zwavejs2mqtt-india-pvc
-      # - name: zwave
-      #   hostPath:
-      #     path: /dev/ttyACM0
-      # nodeSelector:
-      #   workload: india
+
+
 ---
 apiVersion: apps/v1
 kind: Deployment
