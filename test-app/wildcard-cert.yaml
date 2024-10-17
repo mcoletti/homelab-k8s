@@ -1,0 +1,22 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: wildcard-colettifam-com
+  namespace: default
+spec:
+  secretName: wildcard-colettifam-com-tls
+  duration: 2160h # 90d
+  renewBefore: 360h # 15d
+#  isCA: false
+#  privateKey:
+#    algorithm: RSA
+#    encoding: PKCS1
+#    size: 2048
+#  usages:
+#    - server auth
+#    - client auth
+  dnsNames:
+    - "*.colettifam.com"
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
