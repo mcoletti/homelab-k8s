@@ -1,4 +1,4 @@
-nfs-external-provisioner:
+nfs-subdir-external-provisioner:
   replicaCount: 1
   strategyType: Recreate
 
