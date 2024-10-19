@@ -12,16 +12,11 @@ data:
       themes: !include_dir_merge_named themes
     automation: !include automations.yaml
     http:
-    #  server_host: 0.0.0.0
-    #  ip_ban_enabled: true
-    #  login_attempts_threshold: 5
       server_port: 80
       use_x_forwarded_for: true
       trusted_proxies:
-        - 10.233.0.0/18
-        - 192.168.0.0/24
+        - 10.0.0.0/16
         - 127.0.0.1
+        - 192.168.0.0/24
         - 192.168.0.240
-    #    - 192.168.0.0/24
-    
-    #    - 10.233.0.0/18
+        - 10.233.0.0/18
