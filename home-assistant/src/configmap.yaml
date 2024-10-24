@@ -11,14 +11,35 @@ data:
     frontend:
       themes: !include_dir_merge_named themes
     automation: !include automations.yaml
+    logs:
+      homeassistant.components.webhook: debug
+      homeassistant.components.http: debug
+      homeassistant.components.websocket_api: debug
     http:
-      server_port: 80
       use_x_forwarded_for: true
+      ip_ban_enabled: true
       trusted_proxies:
-        - 192.168.0.249
-        - 192.168.0.157
-        - 192.168.0.115
-        - 192.168.0.100
-        - 192.168.0.22
-        - 192.168.0.46
+        - 10.0.0.0/16
         - 127.0.0.1
+        - 192.168.0.0/24
+        - 172.30.33.0/24
+        - 192.168.0.98
+        - 192.168.0.240
+        - 1.1.1.1
+        - 0.0.0.0/0
+        
+        
+        
+        
+
+#        - 192.168.0.249
+#        - 192.168.0.157
+#        - 192.168.0.115
+#        - 192.168.0.100
+#        - 192.168.0.22
+#        - 192.168.0.46
+#        - 127.0.0.1
+
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9:
+  eyJpc3MiOiJjYTRiOTgwNDAxM2U0ZGY3YjMzM2VmYWQxZDdmM2FiOCIsImlhdCI6MTcyOTU0MDY0MywiZXhwIjoyMDQ0OTAwNjQzfQ:
+    EmiW0C8P3HZljoRSep0dY9DxW2lTyv7y6zXxjCCfp1M:
